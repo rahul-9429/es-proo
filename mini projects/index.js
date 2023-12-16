@@ -1,3 +1,8 @@
+import app from "./firebaseConfig.js";
+import { getAuth, onAuthStateChanged, signOut} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const auth = getAuth(app);
+
 const observer= new IntersectionObserver((entries) =>{
   entries.forEach((entry) =>{
       console.log(entry)
@@ -30,3 +35,10 @@ hiddenElements.forEach((el) => observer.observe(el));
 //       articlesElement.style.position = 'sticky';
 //   }
 // }
+document.getElementById("logout").addEventListener('click',()=>{
+    signOut(auth).then(() => {
+        alert("Successfully Logged out");
+    }).catch((error) => {
+        console.log(error);
+    });
+})

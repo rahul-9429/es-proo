@@ -44,7 +44,7 @@ nav ul li  {
 }#img4{
     padding-left: 25%;
 }#img5{
-    padding-left: 60%;
+    padding-left: 50%;
 }#img6{
     padding-left: 10%;
 }
@@ -101,7 +101,7 @@ nav ul li  {
      /* background-image: linear-gradient(to right, #243949 0%, #517fa4 100%); */
 }
 .enou{
-    font-size: 150px;
+    font-size: 2vh;
     text-align: center;
 }
 /* .home{
@@ -228,4 +228,19 @@ li:hover .underbar {
         padding: 8px 16px;
         margin: 0;
     }
+    .nikku {
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top:100;
+        height: 200px;
+        justify-content: center;
+        align-items: center;
+      }
+       
+    #img1, #img2, #img3, #img4, #img5, #img6 ,#img7
+{
+    height: 86px;
+    padding: 0;
+} 
 }

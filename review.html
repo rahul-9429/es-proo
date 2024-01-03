@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    #review-form {
+      max-width: 400px;
+      width: 100%;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    input[type="file"] {
+      margin-top: 4px;
+    }
+
+    input[type="submit"] {
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .stars {
+      display: flex;
+      gap: 5px;
+    }
+
+    .star {
+      cursor: pointer;
+      font-size: 20px;
+      color: #ccc;
+    }
+
+    .star:hover,
+    .star.checked {
+      color: #ffdd42;
+    }
+  </style>
+  <title>Review Form</title>
+</head>
+<body>
+
+  <div id="review-form">
+    <h2>Leave a Review</h2>
+    <form id="myForm">
+      <label for="photo">Photo:</label>
+      <input type="file" id="photo" name="photo" accept="image/*">
+
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="rating">Rating:</label>
+      <div class="stars">
+        <span class="star" onclick="rate(1)">&#9733;</span>
+        <span class="star" onclick="rate(2)">&#9733;</span>
+        <span class="star" onclick="rate(3)">&#9733;</span>
+        <span class="star" onclick="rate(4)">&#9733;</span>
+        <span class="star" onclick="rate(5)">&#9733;</span>
+      </div>
+
+      <label for="comment">Comment:</label>
+      <textarea id="comment" name="comment" rows="4" required></textarea>
+
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+
+  <script type="module">
+    import app from "./firebaseConfig.js";
+    import { getDatabase , set , ref , push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const database = getDatabase(app);
+    window.rate = function(stars) {
+      const starElements = document.querySelectorAll('.star');
+  
+      starElements.forEach((star, index) => {
+        if (index < stars) {
+          star.classList.add('checked');
+        } else {
+          star.classList.remove('checked');
+        }
+      });
+  
+      getSelectedRating();
+    };
+  
+    document.getElementById('myForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+  
+      // Get form field values directly
+      const name = document.getElementById('name').value;
+      const rating = getSelectedRating();
+      const comment = document.getElementById('comment').value;
+  
+      // Read and display the photo
+      const photoInput = document.getElementById('photo');
+      const photo = photoInput.files[0];
+  
+      if (photo) {
+        const reader = new FileReader();
+  
+        reader.onload = function(e) {
+          const photoDataUrl = e.target.result;
+          console.log('Name:', name);
+          console.log('Rating:', rating);
+          console.log('Comment:', comment);
+          console.log('Photo:', photoDataUrl);
+          const newReviewKey = push(ref(database,'/ratings'));
+          set(newReviewKey,{
+            name: name,
+            rating: rating,
+            comment: comment,
+            photo: photoDataUrl
+          }).then(() => {
+            console.log("Uploaded successfully");
+          }).catch((error) => {
+            console.log(error);
+          });
+        };
+  
+        reader.readAsDataURL(photo);
+      } else {
+            console.log('Name:', name);
+            console.log('Rating:', rating);
+            console.log('Comment:', comment);
+            const newReviewKey = push(ref(database,'/ratings'));
+            set(newReviewKey,{
+                name: name,
+                rating: rating,
+                comment: comment
+            }).then(() => {
+                console.log("Uploaded successfully");
+            }).catch((error) => {
+                console.log(error);
+            });
+        }
+    });
+  
+    // Function to get the selected rating
+    function getSelectedRating() {
+      const stars = document.querySelectorAll('.star');
+      let rating = 0;
+  
+      stars.forEach((star, index) => {
+        if (star.classList.contains('checked')) {
+          rating = index + 1;
+        }
+      });
+  
+      return rating;
+    }
+  </script>
+
+
+</body>
+</html>
